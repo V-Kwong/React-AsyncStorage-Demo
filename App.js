@@ -3,24 +3,26 @@ import { AsyncStorage, StyleSheet, Text, View, TextInput } from 'react-native';
 
 export default class App extends React.Component {
   state = {
-    'name': ''
+    'saved': '',
+    'value': ''
   }
 
   componentDidMount = async () => {
     try {
       const value = await AsyncStorage.getItem('name');
       if (value !== null){
-        this.setState({ 'name': value });
+        this.setState({ 'saved': value });
       }
     } catch (error) {
       console.log(error);
     }
   }
 
-  setName = async (value) => {
+  setName = async () => {
     try {
-      await AsyncStorage.setItem('name', value);
-      this.setState({ 'name': value });
+      const newName = this.state.value;
+      await AsyncStorage.setItem('name', newName);
+      this.setState({ 'saved': newName });
     } catch (error) {
       console.log(error);
     }
@@ -29,8 +31,10 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <TextInput style={styles.textInput} onChangeText={this.setName}/>
-        <Text>{this.state.name}</Text>
+        <TextInput style={styles.textInput} 
+          onChangeText={(value) => this.setState({'value': value})}
+          onSubmitEditing={this.setName}/>
+        <Text>{this.state.saved}</Text>
       </View>
     );
   }
